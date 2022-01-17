@@ -51,8 +51,7 @@ int main(int argc, char* argv[])
     //////////////////////////////////////////////////////////////////////////////
     // open the input wave file
     //new //array, allocation is done in a loop. know your type
-    
-
+   
     stFileSpec.eFormat = CAudioFileIf::kFileFormatWav;
     stFileSpec.eBitStreamType = CAudioFileIf::kFileBitStreamFloat32;
     stFileSpec.iNumChannels = 2;
@@ -62,11 +61,7 @@ int main(int argc, char* argv[])
     phAudioFile->openFile(sInputFilePath, CAudioFileIf::kFileRead, &stFileSpec);
     bool isOpenq = phAudioFile->isOpen();
     bool isInit = phAudioFile->isInitialized();
-    //file.CAudioFileIf::openFile(sInputFilePath, CAudioFileIf::kFileFormatWav, stFileSpec) = 0;
-    //Error_t err = CAudioFileIf::openFile(filePth, CAudioFileIf::FileFormat_t::kFileFormatWav);
-    
-    //Error_t openFile(sInputFilePath);
-
+ 
     //////////////////////////////////////////////////////////////////////////////
     // open the output text file
     std::ofstream outputText{ sOutputFilePath};
