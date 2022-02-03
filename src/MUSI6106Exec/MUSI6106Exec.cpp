@@ -104,8 +104,14 @@ int main(int argc, char* argv[])
     // clean-up (close files and free memory)
     phAudioFile->closeFile();
     CAudioFileIf::destroy(phAudioFile);
+
     // all done
     return 0;
+
+    // need to delete all news:
+    //make a for loop over all the channe;s
+
+    delete [] ppfAudioData;
 
 }
 
