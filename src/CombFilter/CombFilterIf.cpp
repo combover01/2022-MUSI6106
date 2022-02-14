@@ -9,6 +9,7 @@
 
 #include "CombFilterIf.h"
 #include "CombFilter.h"
+#include <iostream>
 
 static const char*  kCMyProjectBuildDate = __DATE__;
 
@@ -57,35 +58,56 @@ const char*  CCombFilterIf::getBuildDate ()
 
 Error_t CCombFilterIf::create (CCombFilterIf*& pCCombFilter)
 {
+    pCCombFilter = new CCombFilterIf();
     return Error_t::kNoError;
 }
 
 Error_t CCombFilterIf::destroy (CCombFilterIf*& pCCombFilter)
 {
+    delete pCCombFilter;
+    pCCombFilter = 0;
+
     return Error_t::kNoError;
 }
 
 Error_t CCombFilterIf::init (CombFilterType_t eFilterType, float fMaxDelayLengthInS, float fSampleRateInHz, int iNumChannels)
 {
+    // open the correct type of filter
+    if (eFilterType == kCombFIR) {
+        m_CombFilterType = kCombFIR;
+        m_pCCombFilter = new CFIR(fSampleRateInHz * fMaxDelayLengthInS, iNumChannels);
+    }
+    else if (eFilterType == kCombIIR) {
+        m_CombFilterType = kCombIIR;
+        m_pCCombFilter = new CIIR(fSampleRateInHz * fMaxDelayLengthInS, iNumChannels);
+    }
+    else {
+        return Error_t::kFunctionInvalidArgsError;
+    }
+
     return Error_t::kNoError;
 }
 
 Error_t CCombFilterIf::reset ()
 {
+    init(m_CombFilterType, 1, m_fSampleRate, 1);
     return Error_t::kNoError;
 }
 
 Error_t CCombFilterIf::process (float **ppfInputBuffer, float **ppfOutputBuffer, int iNumberOfFrames)
 {
+    m_pCCombFilter -> process(ppfInputBuffer, ppfOutputBuffer, iNumberOfFrames);
     return Error_t::kNoError;
 }
 
 Error_t CCombFilterIf::setParam (FilterParam_t eParam, float fParamValue)
 {
+    m_pCCombFilter->setParam(eParam, fParamValue);
     return Error_t::kNoError;
 }
 
 float CCombFilterIf::getParam (FilterParam_t eParam) const
 {
+    m_pCCombFilter->getParam(eParam);
     return 0;
 }
