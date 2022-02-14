@@ -3,9 +3,6 @@
 
 #include "ErrorDef.h"
 
-
-//put a pointer ???
-
 class CCombFilterBase; // in case you intend to add an internal base class that the user doesn't see (not required)
 
 /*! \brief interface class for the comb filter (FIR & IIR)

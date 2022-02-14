@@ -46,7 +46,7 @@ public:
     \param iNumberOfFrames buffer length (per channel)
     \return Error_t
     */
-    virtual Error_t process(float** ppfInputBuffer, float** ppfOutputBuffer, int iNumberOfFrames);
+    virtual Error_t process(float** ppfInputBuffer, float** ppfOutputBuffer, int iNumberOfFrames) = 0;
 
 protected:
     CRingBuffer <float> **m_ppRingBuffer;
@@ -63,12 +63,12 @@ class CFIR : public CCombFilterBase {
 public:
     CFIR(int iMaxDelaySamps, int iNumChannels);
     virtual ~CFIR();
-    Error_t process(float** ppfInputBuffer, float** ppfOutputBuffer, int iNumberOfFrames);
+    Error_t process(float** ppfInputBuffer, float** ppfOutputBuffer, int iNumberOfFrames) override;
 };
 
 class CIIR : public CCombFilterBase {
 public:
     CIIR(int iMaxDelaySamps, int iNumChannels);
     virtual ~CIIR();
-    Error_t process(float** ppfInputBuffer, float** ppfOutputBuffer, int iNumberOfFrames);
+    Error_t process(float** ppfInputBuffer, float** ppfOutputBuffer, int iNumberOfFrames) override;
 };
