@@ -42,7 +42,7 @@ CCombFilterBase::CCombFilterBase(int iMaxDelaySamps, int iNumChannels) {
 	// initializing the ringbuffer in each channel
 	m_ppRingBuffer = new CRingBuffer<float>*[iNumChannels];
 	for (int i = 0; i < iNumChannels; i++) {
-		m_ppRingBuffer[i] = new CRingBuffer<float>(m_iMaxDelayLengthSamps);
+		m_ppRingBuffer[i] = new CRingBuffer<float>(iMaxDelaySamps);
 	}		
 		
 	m_iMaxDelayLengthSamps = iMaxDelaySamps;
@@ -105,20 +105,23 @@ Error_t CFIR::process(float** ppfInputBuffer, float** ppfOutputBuffer, int iNumb
 	// output = input[n] + gain*input[n-delay]
 	for (int i = 0; i < m_iNumChannels; i++) {
 		//curOut = read + gain*write
-		ppfOutputBuffer**
-
-
+		for (int j = 0; j < iNumberOfFrames; j++) {
+			ppfOutputBuffer[i][j] = ppfInputBuffer[i][j] + m_fGain * m_ppRingBuffer[i]->getPostInc();
+			m_ppRingBuffer[i]->putPostInc(ppfInputBuffer[i][j]);
+		}
 	}
-
-
-
 	return Error_t::kNoError;
 }
 Error_t CIIR::process(float** ppfInputBuffer, float** ppfOutputBuffer, int iNumberOfFrames) {
 	cout << "Running comb filter IIR" << "\n";
 	// output = input[n] + gain*output[n-delay]
 	//curOut = read + gain*
-	
+	for (int i = 0; i < m_iNumChannels; i++) {
+		for (int j = 0; j < iNumberOfFrames; j++) {
+			ppfOutputBuffer[i][j] = ppfInputBuffer[i][j] + m_fGain * m_ppRingBuffer[i]->getPostInc();
+			m_ppRingBuffer[i]->putPostInc(ppfOutputBuffer[i][j]);
+		}
+	}
 	
 	
 	return Error_t::kNoError;
