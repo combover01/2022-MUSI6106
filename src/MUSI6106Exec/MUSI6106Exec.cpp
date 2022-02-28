@@ -5,6 +5,7 @@
 #include "MUSI6106Config.h"
 
 #include "AudioFileIf.h"
+#include "Fft.h"
 
 using std::cout;
 using std::endl;
@@ -16,10 +17,15 @@ void    showClInfo();
 // main function
 int main(int argc, char* argv[])
 {
+    CFft::complex_t* pOutputSpectrum;
+    CFft::complex_t* pBufferSpectrum;
+
     std::string             sInputFilePath,                 //!< file paths
         sOutputFilePath;
+    int                     iBlockLength;
+    int                     iHopLength;
 
-    static const int        kBlockSize = 1024;
+    //static const int        kBlockSize = 1024;
 
     clock_t                 time = 0;
 
@@ -29,19 +35,28 @@ int main(int argc, char* argv[])
     std::fstream            hOutputFile;
     CAudioFileIf::FileSpec_t stFileSpec;
 
+    CFft* cfft = 0;
+
+    // generate the output, of type complex t
+
+
     showClInfo();
 
     //////////////////////////////////////////////////////////////////////////////
     // parse command line arguments
-    if (argc < 2)
+
+    // should be AudioFilePath BlockLength Hoplength
+    if (argc != 4)
     {
-        cout << "Missing audio input path!";
+        cout << "Expected usage: \<AudioFilePath\> \<BlockLength\> \<HopLength\>";
         return -1;
     }
     else
     {
         sInputFilePath = argv[1];
         sOutputFilePath = sInputFilePath + ".txt";
+        iBlockLength = (int)argv[2];
+        iHopLength = (int)argv[3];
     }
 
     //////////////////////////////////////////////////////////////////////////////
@@ -66,11 +81,18 @@ int main(int argc, char* argv[])
         return -1;
     }
 
+    ///////////////////////////////////////////
+    // start an instance of cfft
+    CFft::createInstance(cfft);
+    CFft::initInstance()
+   
+
+
     //////////////////////////////////////////////////////////////////////////////
     // allocate memory
     ppfAudioData = new float* [stFileSpec.iNumChannels];
     for (int i = 0; i < stFileSpec.iNumChannels; i++)
-        ppfAudioData[i] = new float[kBlockSize];
+        ppfAudioData[i] = new float[iBlockLength];
 
     if (ppfAudioData == 0)
     {
@@ -87,12 +109,15 @@ int main(int argc, char* argv[])
 
     time = clock();
 
+
+
+
     //////////////////////////////////////////////////////////////////////////////
     // get audio data and write it to the output text file (one column per channel)
     while (!phAudioFile->isEof())
     {
         // set block length variable
-        long long iNumFrames = kBlockSize;
+        long long iNumFrames = iBlockLength;
 
         // read data (iNumOfFrames might be updated!)
         phAudioFile->readData(ppfAudioData, iNumFrames);
@@ -124,6 +149,16 @@ int main(int argc, char* argv[])
 
     // all done
     return 0;
+
+}
+///////////////// 
+// take fft for a block given any input sample
+// inputs: starting sample, pointer to the array, and block length
+// output: 1d array (buffer) of the fft of that block
+float* blockFFT(int iStartingSamp, float* pInputArr, int iBlockLength, CFft::complex_t pBufferSpectrum) {
+    CFft::doFft(pBufferSpectrum, pInputArr);
+
+
 
 }
 
