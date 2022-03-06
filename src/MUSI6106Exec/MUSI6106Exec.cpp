@@ -84,7 +84,10 @@ int main(int argc, char* argv[])
     ///////////////////////////////////////////
     // start an instance of cfft
     CFft::createInstance(cfft);
-    CFft::initInstance()
+    // all other variables when initinstance happens are set by default
+    cfft->initInstance(iBlockLength);
+
+
    
 
 
@@ -124,11 +127,18 @@ int main(int argc, char* argv[])
 
         cout << "\r" << "reading and writing";
 
+
+
+
         // write
         for (int i = 0; i < iNumFrames; i++)
         {
             for (int c = 0; c < stFileSpec.iNumChannels; c++)
             {
+
+
+
+
                 hOutputFile << ppfAudioData[c][i] << "\t";
             }
             hOutputFile << endl;
@@ -155,9 +165,14 @@ int main(int argc, char* argv[])
 // take fft for a block given any input sample
 // inputs: starting sample, pointer to the array, and block length
 // output: 1d array (buffer) of the fft of that block
-float* blockFFT(int iStartingSamp, float* pInputArr, int iBlockLength, CFft::complex_t pBufferSpectrum) {
-    CFft::doFft(pBufferSpectrum, pInputArr);
+void blockFFT(CFft*& instance, int iStartingSamp, float* pInputArr, int iBlockLength, CFft::complex_t* pBufferSpectrum) {
 
+    // pInputArr should be a ringbuffer array
+    // 
+    // this should update pBufferSpectrum with the FFT 
+    instance -> doFft(pBufferSpectrum, pInputArr);
+    
+    
 
 
 }
